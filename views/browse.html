@@ -11,13 +11,15 @@
                     </div>
                 </div>
                 <br/>
-                <a ng-repeat="task in tasks | filter: {title: searchTask, status: '!cancelled'} | orderBy: 'datetime':true" ng-href="#/browse/{{task.$id}}">
+                <a ng-repeat="task in tasks | filter: {title: searchTask, status: '!cancelled'} | orderBy: 'datetime':true"
+                   ng-href="#/browse/{{task.$id}}">
                     <div class="list-group-item">
                         <div class="row-picture">
                             <img ng-src="{{task.gravatar}}" class="circle">
                         </div>
                         <div class="row-content">
-                            <h4 class="list-group-item-heading">{{task.title | limitTo: 25}}{{ task.title.length > 25? "..." : "" }}</h4>
+                            <h4 class="list-group-item-heading">{{task.title | limitTo: 25}}{{ task.title.length > 25?
+                                "..." : "" }}</h4>
                             <span class="list-group-item-text">
                                 <span am-time-ago="task.datetime"></span>
                             </span>
@@ -76,6 +78,56 @@
                             </div>
                             <div class="panel-body">
                                 {{selectedTask.description}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- COMMENTS -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">
+                                    Comments
+                                </h3>
+
+                            </div>
+                            <div class="panel-body">
+                                <div class="title" ng-hide="comments && comments.length > 0">
+                                    <span>NO COMMENT ABOUT THIS TASK</span>
+                                </div>
+                                <br/>
+                                <div class="row" ng-repeat="com in comments">
+                                    <div class="col-md-1">
+                                        <img class="img-circle comment gravatar" ng-src="{{com.gravatar}}" alt=""/>
+                                    </div>
+                                    <div class="col-md-11">
+                                        <div class="well well-sm cmt">
+                                            <span class="cmt-title">
+                                                {{com.name}}
+                                            </span>
+                                            <span class="cmt-time pull-right">
+                                                <span am-time-ago="{{com.datetime}}"></span>
+                                            </span><br/>
+                                            <span>{{com.content}}</span>
+                                        </div>
+                                    </div>
+                                </div><!--row-->
+                                <div class="row" ng-show="isOpen(selectedTask)">
+                                    <div class="col-md-12">
+                                        <form ng-submit="addComment()">
+                                            <div class="input-group">
+                                                <div class="input-group-addon">
+                                                    <img ng-src="{{user.profile.gravatar}}" class="img-circle comment gravatar" alt=""/>
+                                                </div>
+                                                <input class="form-control" type="text" ng-model="content" cols="10" rows="3" placeholder="Comment here..." required=""/><br/>
+                                            </div>
+                                            <span class="pull-right">
+                                                <input class="btn btn-info" type="submit" value="Comment"/>
+                                            </span>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
