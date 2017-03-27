@@ -1,29 +1,31 @@
 'use strict';
 
 app.controller("TaskController",
-    function ($scope, $firebaseArray, $firebaseObject, $location, $routeParams, toaster) {
-        var ref = firebase.database().ref();
-        var fbTasks = $firebaseArray(ref.child("tasks"));
-        var taskId = $routeParams.taskId;
+    function ($scope, $location, toaster, Task, Auth) {
+        $scope.createTask = function(){
+            $scope.task.status = 'open';
+            $scope.task.gravatar = Auth.user.profile.gravatar;
+            $scope.task.name = Auth.user.profile.name;
+            $scope.task.poster = Auth.user.uid;
 
-        if(taskId){
-            $scope.selectedTask = getTask(taskId);
+            Task.createTask($scope.task).then(function(ref){
+                toaster.pop("success", "Task created successfully.");
+                $scope.task = {
+                    title: '',
+                    description: '',
+                    total: '',
+                    status: 'open',
+                    gravatar: '',
+                    name: '',
+                    poster: ''
+                }
+                $location.path('/browse/' + ref.getKey());
+            })
         }
 
-        function getTask(taskId){
-            return $firebaseObject(ref.child("tasks").child(taskId));
-        }
-
-        $scope.updateTask = function(task){
-            $scope.selectedTask.$save(task);
-            $location.path('/browse');
-        }
-
-        $scope.tasks = fbTasks;
-
-        $scope.postTask = function (task) {
-            fbTasks.$add(task);
-            toaster.pop("success", "Task is created.");
-            $location.path('/browse');
+        $scope.editTask = function(task){
+            Task.editTask(task).then(function(){
+                toaster.pop('success', 'Task is updated.');
+            })
         }
     })

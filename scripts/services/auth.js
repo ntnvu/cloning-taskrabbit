@@ -20,15 +20,17 @@ app.factory('Auth', function ($firebaseAuth, $firebaseArray, $firebaseObject) {
         },
 
         login: function (user) {
-            return auth.$signInWithEmailAndPassword(user.email, user.password).then(function(data){
-                return Auth.createProfile(data.uid, user);
-            });
+            return auth.$signInWithEmailAndPassword(user.email, user.password);
         },
 
         register: function (user) {
-            return auth.$createUserWithEmailAndPassword(user.email, user.password).then(function () {
-                return Auth.login(user);
-            });
+            return auth.$createUserWithEmailAndPassword(user.email, user.password)
+                .then(function () {
+                    return Auth.login(user);
+                })
+                .then(function (data) {
+                    return Auth.createProfile(data.uid, user);
+                });
         },
         logout: function () {
             auth.$signOut();
@@ -42,21 +44,21 @@ app.factory('Auth', function ($firebaseAuth, $firebaseArray, $firebaseObject) {
         },
 
         signedIn: function () {
-            return Auth.user;
+            return !!Auth.user.providerData;
         }
 
     };
 
     auth.$onAuthStateChanged(function (authData) {
         if (authData) {
-            Auth.user = authData;
+            Auth.user = angular.copy({email: authData.email, uid: authData.uid, providerData: authData.providerData}, Auth.user);
             Auth.user.profile = $firebaseObject(ref.child("profile").child(authData.uid));
         }
         else {
             if (Auth.user && Auth.user.profile) {
-                Auth.user.profile.$remove();
+                Auth.user.profile.$destroy();
             }
-            Auth.user = authData;
+            Auth.user = angular.copy({}, Auth.user);
         }
     })
 

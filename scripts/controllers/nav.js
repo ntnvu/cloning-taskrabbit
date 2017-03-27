@@ -1,19 +1,14 @@
 'use strict'
 
-app.controller('NavController', function($scope, $location, Auth, $firebaseAuth){
-    var auth = $firebaseAuth();
+app.controller('NavController', function($scope, $location, Auth){
 
+    $scope.currentUser = Auth.user;
     $scope.signedIn = Auth.signedIn;
 
     $scope.logout = function(){
         Auth.logout();
         $location.path('/');
     }
-
-
-    auth.$onAuthStateChanged(function (authData) {
-        $scope.currentUser = authData;
-    })
 
 
 });
