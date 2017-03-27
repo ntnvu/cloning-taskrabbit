@@ -8,16 +8,16 @@ app.factory('Task', function (Auth, $firebaseObject, $firebaseArray) {
     var Task = {
         all: tasks,
 
-        getTask: function(taskId){
+        getTask: function (taskId) {
             return $firebaseObject(ref.child('tasks').child(taskId));
         },
 
-        createTask: function(task){
+        createTask: function (task) {
             task.datetime = firebase.database.ServerValue.TIMESTAMP;
             return tasks.$add(task);
         },
 
-        editTask: function(task){
+        editTask: function (task) {
             var t = this.getTask(task.$id);
             return t.$update({
                 title: task.title,
@@ -26,17 +26,19 @@ app.factory('Task', function (Auth, $firebaseObject, $firebaseArray) {
             })
         },
 
-        cancelTask: function(taskId){
+        cancelTask: function (taskId) {
             var t = this.getTask(taskId);
-            t['status'] = "canceled"
-            return t.$save(t);
+            return t.$loaded().then(function () {
+                t.status = "cancelled";
+                t.$save();
+            })
         },
 
-        isCreator: function(task){
+        isCreator: function (task) {
             return (user && user.providerData && user.uid === task.poster);
         },
 
-        isOpen: function(task){
+        isOpen: function (task) {
             return task.status === "open";
         }
 
