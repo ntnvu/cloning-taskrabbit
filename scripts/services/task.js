@@ -40,8 +40,23 @@ app.factory('Task', function (Auth, $firebaseObject, $firebaseArray) {
 
         isOpen: function (task) {
             return task.status === "open";
-        }
+        },
 
+        completeTask: function(taskId){
+            var t = this.getTask(taskId);
+            return t.$loaded().then(function () {
+                t.status = "completed";
+                t.$save();
+            })
+        },
+
+        isAssignee: function(task){
+            return (user && user.providerData && user.uid === task.runner);
+        },
+
+        isCompleted: function(task){
+            return task.status === "completed";
+        }
     }
 
     return Task;
