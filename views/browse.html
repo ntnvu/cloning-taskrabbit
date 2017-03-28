@@ -104,6 +104,8 @@
 
                                 <div class="row" ng-repeat="offer in offers">
                                     <div class="col-md-10">
+                                        <button ng-show="isOfferMaker(offer) && isOpen(selectedTask)" class="btn btn-danger btn-xs"
+                                                ng-click="cancelOffer(offer.$id)">Cancel My Offer - ${{offer.total}}</button>
                                         <img class="img-circle comment gravatar" ng-src="{{offer.gravatar}}" alt=""/>
                                         <span>{{offer.name}}</span>
                                     </div>
