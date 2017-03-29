@@ -54,6 +54,9 @@ app.factory('Offer', function ($firebaseArray, $q, Auth, $firebaseObject, Task) 
                     })
                 });
             })
+                .then(function(){
+                    return Task.createUserTask(taskId);
+                })
         }
     };
 

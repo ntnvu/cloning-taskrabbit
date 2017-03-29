@@ -14,15 +14,38 @@ app.factory('Task', function (Auth, $firebaseObject, $firebaseArray) {
 
         createTask: function (task) {
             task.datetime = firebase.database.ServerValue.TIMESTAMP;
-            return tasks.$add(task);
+            return tasks.$add(task).then(function (newTask) {
+                var obj = {
+                    taskId: newTask.getKey(),
+                    type: true,
+                    title: task.title
+                };
+
+                $firebaseArray(ref.child('user_tasks').child(task.poster)).$add(obj);
+                return newTask;
+            });
+        },
+
+        createUserTask: function (taskId) {
+            this.getTask(taskId).$loaded().then(function(task) {
+                var obj = {
+                    taskId: taskId,
+                    type: false,
+                    title: task.title
+                };
+                console.log(task);
+                console.log(task.runner);
+//                return $firebaseArray(ref.child('user_tasks').child(task.runner)).$add(obj);
+            });
         },
 
         editTask: function (task) {
             var t = this.getTask(task.$id);
-            return t.$update({
-                title: task.title,
-                description: task.description,
-                total: task.total
+            return t.$loaded().then(function () {
+                t.title = task.title;
+                t.description = task.description;
+                t.total = task.total;
+                t.$save();
             })
         },
 
@@ -42,7 +65,7 @@ app.factory('Task', function (Auth, $firebaseObject, $firebaseArray) {
             return task.status === "open";
         },
 
-        completeTask: function(taskId){
+        completeTask: function (taskId) {
             var t = this.getTask(taskId);
             return t.$loaded().then(function () {
                 t.status = "completed";
@@ -50,11 +73,11 @@ app.factory('Task', function (Auth, $firebaseObject, $firebaseArray) {
             })
         },
 
-        isAssignee: function(task){
+        isAssignee: function (task) {
             return (user && user.providerData && user.uid === task.runner);
         },
 
-        isCompleted: function(task){
+        isCompleted: function (task) {
             return task.status === "completed";
         }
     }
