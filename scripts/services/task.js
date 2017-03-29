@@ -27,15 +27,13 @@ app.factory('Task', function (Auth, $firebaseObject, $firebaseArray) {
         },
 
         createUserTask: function (taskId) {
-            this.getTask(taskId).$loaded().then(function(task) {
+            this.getTask(taskId).$loaded().then(function (task) {
                 var obj = {
                     taskId: taskId,
                     type: false,
                     title: task.title
                 };
-                console.log(task);
-                console.log(task.runner);
-//                return $firebaseArray(ref.child('user_tasks').child(task.runner)).$add(obj);
+                return $firebaseArray(ref.child('user_tasks').child(task.runner)).$add(obj);
             });
         },
 

@@ -50,13 +50,12 @@ app.factory('Offer', function ($firebaseArray, $q, Auth, $firebaseObject, Task) 
                     return t.$loaded().then(function () {
                         t.status = "assigned";
                         t.runner = runnerId;
-                        t.$save();
+                        t.$save().then(function () {
+                            return Task.createUserTask(taskId);
+                        });
                     })
                 });
             })
-                .then(function(){
-                    return Task.createUserTask(taskId);
-                })
         }
     };
 
